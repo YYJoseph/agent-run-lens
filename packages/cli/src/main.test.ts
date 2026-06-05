@@ -12,4 +12,11 @@ describe("command-line argument parsing", () => {
       traceFile: "traces/latest.trace.jsonl"
     });
   });
+
+  it("parses view command", () => {
+    expect(parseArguments(["view", "examples/traces/latest.trace.jsonl"])).toEqual({
+      command: "view",
+      traceFile: "examples/traces/latest.trace.jsonl"
+    });
+  });
 });

@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 export type ParsedArguments =
   | { command: "demo"; mode: "offline" | "openai" }
   | { command: "export"; traceFile: string }
+  | { command: "view"; traceFile: string }
   | { command: "help" };
 
 export function parseArguments(args: string[]): ParsedArguments {
@@ -21,6 +22,10 @@ export function parseArguments(args: string[]): ParsedArguments {
     return { command: "export", traceFile: rest[0] };
   }
 
+  if (command === "view" && rest[0]) {
+    return { command: "view", traceFile: rest[0] };
+  }
+
   return { command: "help" };
 }
 
@@ -31,7 +36,8 @@ export function helpText(): string {
     "Usage:",
     "  traceforge demo --offline",
     "  traceforge demo --openai",
-    "  traceforge export <trace-file>"
+    "  traceforge export <trace-file>",
+    "  traceforge view <trace-file>"
   ].join("\n");
 }
 
@@ -47,6 +53,12 @@ export async function main(args = process.argv.slice(2)): Promise<void> {
   if (parsed.command === "export") {
     const { runExportCommand } = await import("./commands/export.js");
     await runExportCommand(parsed.traceFile);
+    return;
+  }
+
+  if (parsed.command === "view") {
+    const { runViewCommand } = await import("./commands/view.js");
+    await runViewCommand(parsed.traceFile);
     return;
   }
 
