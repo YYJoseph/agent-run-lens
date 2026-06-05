@@ -4,6 +4,7 @@ dist/
 .vite/
 coverage/
 traces/*.trace.jsonl
+examples/traces/*.trace.jsonl
 traceforge-export-*/
 examples/fixtures/**/node_modules/
 examples/fixtures/**/dist/
