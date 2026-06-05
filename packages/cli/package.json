@@ -1,0 +1,17 @@
+{
+  "name": "@traceforge/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "traceforge": "dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "traceforge": "node dist/main.js"
+  },
+  "dependencies": {
+    "@traceforge/core": "workspace:*",
+    "@traceforge/demo-agent": "workspace:*"
+  }
+}
