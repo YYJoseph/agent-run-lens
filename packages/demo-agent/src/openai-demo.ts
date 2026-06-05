@@ -15,9 +15,10 @@ type CommandResult = {
 };
 
 type OpenAiResponse = {
-  output_text?: unknown;
   output?: unknown;
 };
+
+const maxOpenAiErrorDetailLength = 180;
 
 export function assertOpenAiKey(value: string | undefined): string {
   if (!value) {
@@ -84,15 +85,78 @@ function createNpmCommand(args: string[]) {
   };
 }
 
-function readOpenAiText(body: OpenAiResponse): string {
-  if (typeof body.output_text === "string" && body.output_text.length > 0) {
-    return body.output_text;
-  }
-
-  return JSON.stringify(body.output ?? body);
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function requestOpenAiPatch(apiKey: string, prompt: string): Promise<string> {
+export function parseOpenAiResponseText(body: OpenAiResponse): string {
+  if (!Array.isArray(body.output)) {
+    throw new Error("OpenAI Responses output did not include text content");
+  }
+
+  for (const item of body.output) {
+    if (!isRecord(item) || !Array.isArray(item.content)) {
+      continue;
+    }
+
+    for (const content of item.content) {
+      if (!isRecord(content) || content.type !== "output_text" || typeof content.text !== "string") {
+        continue;
+      }
+
+      if (content.text.length > 0) {
+        return content.text;
+      }
+    }
+  }
+
+  throw new Error("OpenAI Responses output did not include text content");
+}
+
+function truncate(value: string): string {
+  if (value.length <= maxOpenAiErrorDetailLength) {
+    return value;
+  }
+
+  return `${value.slice(0, maxOpenAiErrorDetailLength - 3)}...`;
+}
+
+function redactOpenAiError(value: string, apiKey: string): string {
+  let redacted = value.replace(/Bearer\s+[^\s"'\\]+/gi, "Bearer [REDACTED]");
+  if (apiKey.length > 0) {
+    redacted = redacted.split(apiKey).join("[REDACTED]");
+  }
+
+  return redacted;
+}
+
+function readOpenAiErrorDetail(rawBody: string): string {
+  try {
+    const parsed = JSON.parse(rawBody) as unknown;
+    if (!isRecord(parsed) || !isRecord(parsed.error)) {
+      return rawBody;
+    }
+
+    const parts = [];
+    if (typeof parsed.error.code === "string" && parsed.error.code.length > 0) {
+      parts.push(parsed.error.code);
+    }
+    if (typeof parsed.error.message === "string" && parsed.error.message.length > 0) {
+      parts.push(parsed.error.message);
+    }
+
+    return parts.length > 0 ? parts.join(": ") : rawBody;
+  } catch {
+    return rawBody;
+  }
+}
+
+function formatOpenAiError(status: number, rawBody: string, apiKey: string): string {
+  const detail = truncate(redactOpenAiError(readOpenAiErrorDetail(rawBody), apiKey));
+  return `OpenAI Responses request failed with ${status}: ${detail}`;
+}
+
+export async function requestOpenAiPatch(apiKey: string, prompt: string): Promise<string> {
   const model = process.env.TRACEFORGE_OPENAI_MODEL ?? "gpt-5.4-mini";
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -108,10 +172,10 @@ async function requestOpenAiPatch(apiKey: string, prompt: string): Promise<strin
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`OpenAI Responses request failed with ${response.status}: ${errorText}`);
+    throw new Error(formatOpenAiError(response.status, errorText, apiKey));
   }
 
-  return readOpenAiText((await response.json()) as OpenAiResponse);
+  return parseOpenAiResponseText((await response.json()) as OpenAiResponse);
 }
 
 export async function runOpenAiDemo(options: RunOpenAiDemoOptions): Promise<string> {
