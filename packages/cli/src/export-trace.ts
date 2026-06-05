@@ -22,12 +22,19 @@ function formatSummary(summary: TraceSummary, traceFileName: string): string {
   ].join("\n");
 }
 
+function sanitizeRunId(runId: string | null): string {
+  const trimmed = runId?.trim() ?? "";
+  const sanitized = trimmed.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 80);
+
+  return sanitized === "" ? "unknown-run" : sanitized;
+}
+
 export async function exportTraceFolder(traceFile: string): Promise<string> {
   const tracePath = resolve(traceFile);
   const events = await readTraceFile(tracePath);
   const summary = summarizeTrace(events);
-  const runId = summary.runId ?? "unknown-run";
-  const exportPath = resolve(`traceforge-export-${runId}`);
+  const safeRunId = sanitizeRunId(summary.runId);
+  const exportPath = resolve(`traceforge-export-${safeRunId}`);
   const traceFileName = basename(tracePath);
 
   await mkdir(exportPath, { recursive: true });
