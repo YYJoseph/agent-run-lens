@@ -1,3 +1,5 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 import { appendTraceEvent } from "./jsonl.js";
 import type { TraceEvent, TraceEventType, TraceStatus } from "./events.js";
 
@@ -56,6 +58,9 @@ export async function createRecorder(options: CreateRecorderOptions): Promise<Re
     await appendTraceEvent(options.outputPath, event);
     return event;
   }
+
+  await mkdir(dirname(options.outputPath), { recursive: true });
+  await writeFile(options.outputPath, "", "utf8");
 
   await write({
     type: "run_started",
