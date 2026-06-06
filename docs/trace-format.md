@@ -1,6 +1,6 @@
 # Trace Format
 
-TraceForge stores traces as newline-delimited JSON. Each line is one complete
+AgentRunLens stores traces as newline-delimited JSON. Each line is one complete
 JSON object representing a single event in an artificial intelligence agent run.
 Readers can process a trace incrementally by parsing one line at a time.
 

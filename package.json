@@ -1,5 +1,5 @@
 {
-  "name": "traceforge",
+  "name": "agent-run-lens",
   "version": "0.1.0",
   "private": true,
   "description": "Local-first black box recorder for artificial intelligence agent runs.",
@@ -10,7 +10,8 @@
     "test": "vitest run",
     "check": "corepack pnpm -r --if-present check",
     "verify": "corepack pnpm build && corepack pnpm test",
-    "traceforge": "corepack pnpm --filter @traceforge/cli traceforge"
+    "agent-run-lens": "corepack pnpm --filter @agent-run-lens/cli agent-run-lens",
+    "traceforge": "corepack pnpm --filter @agent-run-lens/cli traceforge"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

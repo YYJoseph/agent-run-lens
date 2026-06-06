@@ -7,7 +7,7 @@ import { appendTraceEvent, readTraceFile } from "./jsonl.js";
 
 describe("recorder", () => {
   it("records events with generated run and event fields", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-recorder-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-recorder-"));
     const outputPath = join(directory, "run.trace.jsonl");
 
     const recorder = await createRecorder({ runName: "test-run", outputPath });
@@ -30,7 +30,7 @@ describe("recorder", () => {
   });
 
   it("starts a fresh trace when the output path already has events", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-recorder-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-recorder-"));
     const outputPath = join(directory, "run.trace.jsonl");
 
     await appendTraceEvent(outputPath, {

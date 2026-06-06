@@ -1,6 +1,6 @@
-# TraceForge
+# AgentRunLens
 
-TraceForge is a local-first black box recorder for artificial intelligence agent
+AgentRunLens is a local-first black box recorder for artificial intelligence agent
 runs. It records prompts, decisions, tool calls, shell commands, file patches,
 failures, retries, and final results into a portable newline-delimited JSON
 trace file.
@@ -14,8 +14,8 @@ trace with a generated summary.
 ```bash
 corepack pnpm install
 corepack pnpm build
-corepack pnpm run traceforge -- demo --offline
-corepack pnpm run traceforge -- view examples/traces/latest.trace.jsonl
+corepack pnpm run agent-run-lens -- demo --offline
+corepack pnpm run agent-run-lens -- view examples/traces/latest.trace.jsonl
 ```
 
 ## Optional OpenAI Demonstration
@@ -23,19 +23,19 @@ corepack pnpm run traceforge -- view examples/traces/latest.trace.jsonl
 POSIX shells:
 
 ```bash
-OPENAI_API_KEY=your_key corepack pnpm run traceforge -- demo --openai
+OPENAI_API_KEY=your_key corepack pnpm run agent-run-lens -- demo --openai
 ```
 
 PowerShell:
 
 ```powershell
-$env:OPENAI_API_KEY="your_key"; corepack pnpm run traceforge -- demo --openai
+$env:OPENAI_API_KEY="your_key"; corepack pnpm run agent-run-lens -- demo --openai
 ```
 
 Command Prompt:
 
 ```cmd
-set "OPENAI_API_KEY=your_key" && corepack pnpm run traceforge -- demo --openai
+set "OPENAI_API_KEY=your_key" && corepack pnpm run agent-run-lens -- demo --openai
 ```
 
 If `OPENAI_API_KEY` is not set, use the offline demonstration.
@@ -43,8 +43,8 @@ If `OPENAI_API_KEY` is not set, use the offline demonstration.
 ## Export A Trace
 
 ```bash
-corepack pnpm run traceforge -- export examples/traces/latest.trace.jsonl
+corepack pnpm run agent-run-lens -- export examples/traces/latest.trace.jsonl
 ```
 
-The export command writes a folder containing the original trace and a generated
-summary.
+The export command writes a folder containing the original trace, a generated
+summary, captured file diffs, and safe environment metadata.

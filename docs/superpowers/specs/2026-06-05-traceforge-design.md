@@ -1,8 +1,8 @@
-# TraceForge Design Spec
+# AgentRunLens Design Spec
 
 ## Summary
 
-TraceForge is a local-first black box recorder for AI agents. It captures the
+AgentRunLens is a local-first black box recorder for AI agents. It captures the
 important events in an agent run, stores them in a portable trace format, and
 shows them in a clear web UI so developers can debug behavior, inspect failures,
 review file changes, and share reproducible traces.
@@ -43,10 +43,10 @@ answer questions such as:
 
 ## Product Shape
 
-TraceForge will expose three main surfaces:
+AgentRunLens will expose three main surfaces:
 
-- `@traceforge/core`: TypeScript event types, trace writer, and recorder API.
-- `traceforge` CLI: demo execution, trace viewing, and export commands.
+- `@agent-run-lens/core`: TypeScript event types, trace writer, and recorder API.
+- `agent-run-lens` CLI: demo execution, trace viewing, and export commands.
 - `apps/web`: React/Vite trace viewer for timeline, details, diffs, and failures.
 
 The recommended first-run experience is:
@@ -54,13 +54,13 @@ The recommended first-run experience is:
 ```bash
 npm install
 npm run build
-npm run traceforge -- demo --offline
-npm run traceforge -- view ./traces/latest.trace.jsonl
+npm run agent-run-lens -- demo --offline
+npm run agent-run-lens -- view ./traces/latest.trace.jsonl
 ```
 
 ## CLI Commands
 
-### `traceforge demo --offline`
+### `agent-run-lens demo --offline`
 
 Runs a deterministic local demo against a tiny TypeScript fixture project. The
 demo simulates an agent debugging a failing test:
@@ -77,21 +77,21 @@ demo simulates an agent debugging a failing test:
 The offline demo must be stable in CI and must not require network access or an
 API key.
 
-### `traceforge demo --openai`
+### `agent-run-lens demo --openai`
 
 Runs a real LLM-backed demo when `OPENAI_API_KEY` is present. It uses the same
 fixture and trace schema as the offline demo. If the key is missing, the CLI
-prints a short message pointing users to `traceforge demo --offline`.
+prints a short message pointing users to `agent-run-lens demo --offline`.
 
 The OpenAI demo is optional and must not be required for tests.
 
-### `traceforge view <trace-file>`
+### `agent-run-lens view <trace-file>`
 
 Starts a local web server and opens or prints a URL for the trace viewer. The
 viewer loads a JSONL trace and displays the run timeline, event details, file
 diffs, errors, and run stats.
 
-### `traceforge export <trace-file>`
+### `agent-run-lens export <trace-file>`
 
 Creates a shareable bundle containing:
 

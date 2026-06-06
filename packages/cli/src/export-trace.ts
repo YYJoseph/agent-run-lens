@@ -1,6 +1,6 @@
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
-import { readTraceFile, summarizeTrace, type TraceEvent, type TraceSummary } from "@traceforge/core";
+import { readTraceFile, summarizeTrace, type TraceEvent, type TraceSummary } from "@agent-run-lens/core";
 
 function formatNullable(value: string | number | null): string {
   return value === null ? "None" : String(value);
@@ -8,7 +8,7 @@ function formatNullable(value: string | number | null): string {
 
 function formatSummary(summary: TraceSummary, traceFileName: string): string {
   return [
-    "# TraceForge Export Summary",
+    "# AgentRunLens Export Summary",
     "",
     `Trace file: ${traceFileName}`,
     `Run identifier: ${formatNullable(summary.runId)}`,
@@ -40,7 +40,7 @@ function readRecordString(value: unknown, key: string): string | null {
 
 function formatFileDiffs(events: TraceEvent[]): string {
   const filePatchEvents = events.filter((event) => event.type === "file_patch");
-  const lines = ["# TraceForge File Diffs", ""];
+  const lines = ["# AgentRunLens File Diffs", ""];
 
   if (filePatchEvents.length === 0) {
     lines.push("No file patch events were captured.", "");
@@ -66,7 +66,7 @@ function createEnvironmentMetadata() {
     nodeVersion: process.version,
     platform: process.platform,
     architecture: process.arch,
-    traceForgeVersion: process.env.npm_package_version ?? null,
+    agentRunLensVersion: process.env.npm_package_version ?? null,
     exportedAt: new Date().toISOString()
   };
 }
@@ -76,7 +76,7 @@ export async function exportTraceFolder(traceFile: string): Promise<string> {
   const events = await readTraceFile(tracePath);
   const summary = summarizeTrace(events);
   const safeRunId = sanitizeRunId(summary.runId);
-  const exportPath = resolve(`traceforge-export-${safeRunId}`);
+  const exportPath = resolve(`agent-run-lens-export-${safeRunId}`);
   const traceFileName = basename(tracePath);
 
   await mkdir(exportPath, { recursive: true });

@@ -6,6 +6,7 @@ coverage/
 traces/*.trace.jsonl
 examples/traces/*.trace.jsonl
 traceforge-export-*/
+agent-run-lens-export-*/
 examples/fixtures/
 examples/fixtures/**/node_modules/
 examples/fixtures/**/dist/

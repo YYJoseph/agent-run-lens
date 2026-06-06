@@ -7,7 +7,7 @@ import type { TraceEvent } from "./events.js";
 
 describe("newline-delimited JSON trace files", () => {
   it("writes and reads trace events", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-jsonl-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-jsonl-"));
     const filePath = join(directory, "run.trace.jsonl");
     const event: TraceEvent = {
       id: "event_1",
@@ -24,7 +24,7 @@ describe("newline-delimited JSON trace files", () => {
   });
 
   it("reports the line number for invalid JSON", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-jsonl-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-jsonl-"));
     const filePath = join(directory, "broken.trace.jsonl");
 
     await appendTraceEvent(filePath, {

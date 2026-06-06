@@ -1,8 +1,8 @@
-# TraceForge Implementation Plan
+# AgentRunLens Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the first working version of TraceForge: a local-first black box recorder for artificial intelligence agent runs with an offline demonstration, optional OpenAI demonstration, command-line tools, a local web viewer, and exportable trace folders.
+**Goal:** Build the first working version of AgentRunLens: a local-first black box recorder for artificial intelligence agent runs with an offline demonstration, optional OpenAI demonstration, command-line tools, a local web viewer, and exportable trace folders.
 
 **Architecture:** Use a TypeScript workspace with small packages. `packages/core` owns trace event types, validation, reading, writing, and summary derivation. `packages/demo-agent` creates deterministic and optional OpenAI-backed traces. `packages/cli` exposes commands, and `apps/web` renders traces in a Vite React application.
 
@@ -52,7 +52,7 @@ Add `package.json`:
 
 ```json
 {
-  "name": "traceforge",
+  "name": "agent-run-lens",
   "version": "0.1.0",
   "private": true,
   "description": "Local-first black box recorder for artificial intelligence agent runs.",
@@ -61,7 +61,7 @@ Add `package.json`:
     "build": "pnpm -r build",
     "test": "vitest run",
     "check": "pnpm -r check",
-    "traceforge": "pnpm --filter @traceforge/cli traceforge"
+    "agent-run-lens": "pnpm --filter @agent-run-lens/cli agent-run-lens"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
@@ -129,7 +129,7 @@ dist/
 .vite/
 coverage/
 traces/*.trace.jsonl
-traceforge-export-*/
+agent-run-lens-export-*/
 examples/fixtures/**/node_modules/
 examples/fixtures/**/dist/
 ```
@@ -154,7 +154,7 @@ Expected: Vitest reports no test files or completes without application test fai
 
 ```bash
 git add package.json pnpm-workspace.yaml tsconfig.base.json vitest.config.ts .gitignore examples/traces/.gitkeep pnpm-lock.yaml
-git commit -m "chore: create TraceForge workspace"
+git commit -m "chore: create AgentRunLens workspace"
 ```
 
 ## Task 2: Core Trace Types And Validation
@@ -172,7 +172,7 @@ Add `packages/core/package.json`:
 
 ```json
 {
-  "name": "@traceforge/core",
+  "name": "@agent-run-lens/core",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -350,7 +350,7 @@ Run: `pnpm test packages/core/src/events.test.ts`
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/core check`
+Run: `pnpm --filter @agent-run-lens/core check`
 
 Expected: PASS.
 
@@ -384,7 +384,7 @@ import type { TraceEvent } from "./events.js";
 
 describe("newline-delimited JSON trace files", () => {
   it("writes and reads trace events", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-jsonl-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-jsonl-"));
     const filePath = join(directory, "run.trace.jsonl");
     const event: TraceEvent = {
       id: "event_1",
@@ -401,7 +401,7 @@ describe("newline-delimited JSON trace files", () => {
   });
 
   it("reports the line number for invalid JSON", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-jsonl-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-jsonl-"));
     const filePath = join(directory, "broken.trace.jsonl");
 
     await appendTraceEvent(filePath, {
@@ -432,7 +432,7 @@ import { readTraceFile } from "./jsonl.js";
 
 describe("recorder", () => {
   it("records events with generated run and event fields", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-recorder-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-recorder-"));
     const outputPath = join(directory, "run.trace.jsonl");
 
     const recorder = await createRecorder({ runName: "test-run", outputPath });
@@ -601,7 +601,7 @@ Run: `pnpm test packages/core/src/jsonl.test.ts packages/core/src/recorder.test.
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/core check`
+Run: `pnpm --filter @agent-run-lens/core check`
 
 Expected: PASS.
 
@@ -710,7 +710,7 @@ Run: `pnpm test packages/core/src/summary.test.ts`
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/core check`
+Run: `pnpm --filter @agent-run-lens/core check`
 
 Expected: PASS.
 
@@ -737,7 +737,7 @@ Add `packages/demo-agent/package.json`:
 
 ```json
 {
-  "name": "@traceforge/demo-agent",
+  "name": "@agent-run-lens/demo-agent",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -747,7 +747,7 @@ Add `packages/demo-agent/package.json`:
     "check": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@traceforge/core": "workspace:*"
+    "@agent-run-lens/core": "workspace:*"
   },
   "devDependencies": {}
 }
@@ -777,12 +777,12 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
-import { readTraceFile } from "@traceforge/core";
+import { readTraceFile } from "@agent-run-lens/core";
 import { runOfflineDemo } from "./offline-demo.js";
 
 describe("offline demonstration agent", () => {
   it("creates a complete trace with failure, patch, and final success", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-offline-demo-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-offline-demo-"));
     const tracePath = join(directory, "latest.trace.jsonl");
 
     await runOfflineDemo({ workspacePath: join(directory, "fixture"), tracePath });
@@ -875,7 +875,7 @@ Add `packages/demo-agent/src/offline-demo.ts`:
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { createRecorder } from "@traceforge/core";
+import { createRecorder } from "@agent-run-lens/core";
 import { createNormalizeEmailFixture, patchNormalizeEmail } from "./fixture.js";
 
 export type RunOfflineDemoOptions = {
@@ -978,7 +978,7 @@ Run: `pnpm test packages/demo-agent/src/offline-demo.test.ts`
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/demo-agent check`
+Run: `pnpm --filter @agent-run-lens/demo-agent check`
 
 Expected: PASS.
 
@@ -1006,20 +1006,20 @@ Add `packages/cli/package.json`:
 
 ```json
 {
-  "name": "@traceforge/cli",
+  "name": "@agent-run-lens/cli",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "traceforge": "dist/main.js"
+    "agent-run-lens": "dist/main.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
-    "traceforge": "node dist/main.js"
+    "agent-run-lens": "node dist/main.js"
   },
   "dependencies": {
-    "@traceforge/core": "workspace:*",
-    "@traceforge/demo-agent": "workspace:*"
+    "@agent-run-lens/core": "workspace:*",
+    "@agent-run-lens/demo-agent": "workspace:*"
   }
 }
 ```
@@ -1108,7 +1108,7 @@ export async function main(args = process.argv.slice(2)): Promise<void> {
     return;
   }
 
-  console.log(["TraceForge", "", "Commands:", "  traceforge demo --offline", "  traceforge demo --openai", "  traceforge export <trace-file>"].join("\n"));
+  console.log(["AgentRunLens", "", "Commands:", "  agent-run-lens demo --offline", "  agent-run-lens demo --openai", "  agent-run-lens export <trace-file>"].join("\n"));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -1126,16 +1126,16 @@ Add `packages/cli/src/commands/demo.ts`:
 ```ts
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
-import { runOfflineDemo } from "@traceforge/demo-agent";
+import { runOfflineDemo } from "@agent-run-lens/demo-agent";
 
 export async function runDemoCommand(mode: "offline" | "openai"): Promise<void> {
   if (mode === "openai" && !process.env.OPENAI_API_KEY) {
-    console.log("OPENAI_API_KEY is not set. Run `traceforge demo --offline` for the local demonstration.");
+    console.log("OPENAI_API_KEY is not set. Run `agent-run-lens demo --offline` for the local demonstration.");
     return;
   }
 
   if (mode === "openai") {
-    const { runOpenAiDemo } = await import("@traceforge/demo-agent");
+    const { runOpenAiDemo } = await import("@agent-run-lens/demo-agent");
     const tracePath = await runOpenAiDemo({
       workspacePath: resolve("examples/fixtures/openai-normalize-email"),
       tracePath: resolve("examples/traces/latest.trace.jsonl")
@@ -1160,20 +1160,20 @@ Add `packages/cli/src/export-trace.ts`:
 ```ts
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
-import { readTraceFile, summarizeTrace } from "@traceforge/core";
+import { readTraceFile, summarizeTrace } from "@agent-run-lens/core";
 
 export async function exportTraceFolder(traceFile: string): Promise<string> {
   const tracePath = resolve(traceFile);
   const events = await readTraceFile(tracePath);
   const summary = summarizeTrace(events);
-  const exportPath = resolve(`traceforge-export-${summary.runId ?? "unknown-run"}`);
+  const exportPath = resolve(`agent-run-lens-export-${summary.runId ?? "unknown-run"}`);
 
   await mkdir(exportPath, { recursive: true });
   await copyFile(tracePath, join(exportPath, basename(tracePath)));
   await writeFile(
     join(exportPath, "summary.md"),
     [
-      "# TraceForge Export Summary",
+      "# AgentRunLens Export Summary",
       "",
       `- Run identifier: ${summary.runId ?? "unknown"}`,
       `- Event count: ${summary.eventCount}`,
@@ -1209,7 +1209,7 @@ Run: `pnpm test packages/cli/src/main.test.ts`
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/cli check`
+Run: `pnpm --filter @agent-run-lens/cli check`
 
 Expected: PASS.
 
@@ -1221,7 +1221,7 @@ Expected: PASS.
 
 ```bash
 git add packages/cli
-git commit -m "feat: add TraceForge command-line tools"
+git commit -m "feat: add AgentRunLens command-line tools"
 ```
 
 ## Task 7: Optional OpenAI Demonstration
@@ -1260,7 +1260,7 @@ Add `packages/demo-agent/src/openai-demo.ts`:
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { createRecorder } from "@traceforge/core";
+import { createRecorder } from "@agent-run-lens/core";
 import { createNormalizeEmailFixture, patchNormalizeEmail } from "./fixture.js";
 import type { RunOfflineDemoOptions } from "./offline-demo.js";
 
@@ -1405,7 +1405,7 @@ Run: `pnpm test packages/demo-agent/src/openai-demo.test.ts`
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/demo-agent check`
+Run: `pnpm --filter @agent-run-lens/demo-agent check`
 
 Expected: PASS.
 
@@ -1439,7 +1439,7 @@ Add `apps/web/package.json`:
 
 ```json
 {
-  "name": "@traceforge/web",
+  "name": "@agent-run-lens/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -1449,7 +1449,7 @@ Add `apps/web/package.json`:
     "dev": "vite --host 127.0.0.1"
   },
   "dependencies": {
-    "@traceforge/core": "workspace:*",
+    "@agent-run-lens/core": "workspace:*",
     "@vitejs/plugin-react": "^4.3.0",
     "vite": "^5.3.0",
     "react": "^18.3.0",
@@ -1472,7 +1472,7 @@ Add `apps/web/index.html`:
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TraceForge</title>
+    <title>AgentRunLens</title>
   </head>
   <body>
     <div id="root"></div>
@@ -1540,7 +1540,7 @@ Expected: FAIL because `trace-model.ts` does not exist.
 Add `apps/web/src/trace-model.ts`:
 
 ```ts
-import { parseTraceEvent, summarizeTrace, type TraceEvent, type TraceSummary } from "@traceforge/core";
+import { parseTraceEvent, summarizeTrace, type TraceEvent, type TraceSummary } from "@agent-run-lens/core";
 
 export type TraceModel = {
   events: TraceEvent[];
@@ -1585,7 +1585,7 @@ Add `apps/web/src/App.tsx`:
 
 ```tsx
 import { useEffect, useMemo, useState } from "react";
-import type { TraceEvent } from "@traceforge/core";
+import type { TraceEvent } from "@agent-run-lens/core";
 import { parseTraceText } from "./trace-model.js";
 import { EventTimeline } from "./components/EventTimeline.js";
 import { EventDetails } from "./components/EventDetails.js";
@@ -1621,7 +1621,7 @@ export function App() {
   return (
     <main className="shell">
       <aside className="sidebar">
-        <h1>TraceForge</h1>
+        <h1>AgentRunLens</h1>
         <p>{model.summary.eventCount} events</p>
         <p>{model.summary.failureCount} failures</p>
         {loadError ? <p className="notice">{loadError}</p> : null}
@@ -1644,7 +1644,7 @@ Add component files:
 
 ```tsx
 // apps/web/src/components/EventTimeline.tsx
-import type { TraceEvent } from "@traceforge/core";
+import type { TraceEvent } from "@agent-run-lens/core";
 
 export function EventTimeline(props: { events: TraceEvent[]; selectedEventId: string | null; onSelect(event: TraceEvent): void }) {
   return (
@@ -1664,7 +1664,7 @@ export function EventTimeline(props: { events: TraceEvent[]; selectedEventId: st
 
 ```tsx
 // apps/web/src/components/EventDetails.tsx
-import type { TraceEvent } from "@traceforge/core";
+import type { TraceEvent } from "@agent-run-lens/core";
 
 export function EventDetails(props: { event: TraceEvent | null }) {
   if (!props.event) {
@@ -1682,7 +1682,7 @@ export function EventDetails(props: { event: TraceEvent | null }) {
 
 ```tsx
 // apps/web/src/components/FailurePanel.tsx
-import type { TraceEvent, TraceSummary } from "@traceforge/core";
+import type { TraceEvent, TraceSummary } from "@agent-run-lens/core";
 
 export function FailurePanel(props: { events: TraceEvent[]; summary: TraceSummary }) {
   const firstFailure = props.events.find((event) => event.id === props.summary.firstFailureEventId);
@@ -1698,7 +1698,7 @@ export function FailurePanel(props: { events: TraceEvent[]; summary: TraceSummar
 
 ```tsx
 // apps/web/src/components/DiffPanel.tsx
-import type { TraceEvent } from "@traceforge/core";
+import type { TraceEvent } from "@agent-run-lens/core";
 
 export function DiffPanel(props: { events: TraceEvent[] }) {
   const patches = props.events.filter((event) => event.type === "file_patch");
@@ -1786,11 +1786,11 @@ Run: `pnpm test apps/web/src/trace-model.test.ts`
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/web check`
+Run: `pnpm --filter @agent-run-lens/web check`
 
 Expected: PASS.
 
-Run: `pnpm --filter @traceforge/web build`
+Run: `pnpm --filter @agent-run-lens/web build`
 
 Expected: PASS.
 
@@ -1883,7 +1883,7 @@ import { startViewerServer } from "../server.js";
 
 export async function runViewCommand(traceFile: string): Promise<void> {
   const url = await startViewerServer(traceFile);
-  console.log(`TraceForge viewer running at ${url}`);
+  console.log(`AgentRunLens viewer running at ${url}`);
 }
 ```
 
@@ -1919,7 +1919,7 @@ if (parsed.command === "view") {
 Add help line:
 
 ```text
-  traceforge view <trace-file>
+  agent-run-lens view <trace-file>
 ```
 
 - [ ] **Step 6: Run checks**
@@ -1951,9 +1951,9 @@ git commit -m "feat: serve traces in local viewer"
 Add `README.md`:
 
 ```md
-# TraceForge
+# AgentRunLens
 
-TraceForge is a local-first black box recorder for artificial intelligence agent
+AgentRunLens is a local-first black box recorder for artificial intelligence agent
 runs. It records prompts, decisions, tool calls, shell commands, file patches,
 failures, retries, and final results into a portable newline-delimited JSON
 trace file.
@@ -1967,14 +1967,14 @@ then lets you inspect the full run timeline and file diff.
 ```bash
 pnpm install
 pnpm build
-pnpm run traceforge -- demo --offline
-pnpm run traceforge -- view examples/traces/latest.trace.jsonl
+pnpm run agent-run-lens -- demo --offline
+pnpm run agent-run-lens -- view examples/traces/latest.trace.jsonl
 ```
 
 ## Optional OpenAI Demonstration
 
 ```bash
-OPENAI_API_KEY=your_key pnpm run traceforge -- demo --openai
+OPENAI_API_KEY=your_key pnpm run agent-run-lens -- demo --openai
 ```
 
 If `OPENAI_API_KEY` is not set, use the offline demonstration.
@@ -1982,7 +1982,7 @@ If `OPENAI_API_KEY` is not set, use the offline demonstration.
 ## Export A Trace
 
 ```bash
-pnpm run traceforge -- export examples/traces/latest.trace.jsonl
+pnpm run agent-run-lens -- export examples/traces/latest.trace.jsonl
 ```
 
 The export command writes a folder containing the original trace and a generated
@@ -1996,7 +1996,7 @@ Add `docs/trace-format.md`:
 ```md
 # Trace Format
 
-TraceForge stores traces as newline-delimited JSON. Each line is one event.
+AgentRunLens stores traces as newline-delimited JSON. Each line is one event.
 
 Required fields:
 
@@ -2031,19 +2031,19 @@ Expected: PASS.
 
 - [ ] **Step 5: Run offline demonstration**
 
-Run: `pnpm run traceforge -- demo --offline`
+Run: `pnpm run agent-run-lens -- demo --offline`
 
 Expected: command prints a path ending in `examples/traces/latest.trace.jsonl`.
 
 - [ ] **Step 6: Export demonstration trace**
 
-Run: `pnpm run traceforge -- export examples/traces/latest.trace.jsonl`
+Run: `pnpm run agent-run-lens -- export examples/traces/latest.trace.jsonl`
 
-Expected: command prints a path beginning with `traceforge-export-`.
+Expected: command prints a path beginning with `agent-run-lens-export-`.
 
 - [ ] **Step 7: Build web viewer**
 
-Run: `pnpm --filter @traceforge/web build`
+Run: `pnpm --filter @agent-run-lens/web build`
 
 Expected: PASS and `apps/web/dist` exists.
 
@@ -2051,7 +2051,7 @@ Expected: PASS and `apps/web/dist` exists.
 
 ```bash
 git add README.md docs/trace-format.md package.json
-git commit -m "docs: add TraceForge quickstart"
+git commit -m "docs: add AgentRunLens quickstart"
 ```
 
 ## Coverage Review

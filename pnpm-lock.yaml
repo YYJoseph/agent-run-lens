@@ -26,7 +26,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@traceforge/core':
+      '@agent-run-lens/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@vitejs/plugin-react':
@@ -54,10 +54,10 @@ importers:
 
   packages/cli:
     dependencies:
-      '@traceforge/core':
+      '@agent-run-lens/core':
         specifier: workspace:*
         version: link:../core
-      '@traceforge/demo-agent':
+      '@agent-run-lens/demo-agent':
         specifier: workspace:*
         version: link:../demo-agent
 
@@ -65,7 +65,7 @@ importers:
 
   packages/demo-agent:
     dependencies:
-      '@traceforge/core':
+      '@agent-run-lens/core':
         specifier: workspace:*
         version: link:../core
 

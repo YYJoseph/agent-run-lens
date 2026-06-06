@@ -1,4 +1,4 @@
-import type { TraceEvent } from "@traceforge/core";
+import type { TraceEvent } from "@agent-run-lens/core";
 
 function patchText(event: TraceEvent): string {
   const output = event.output;

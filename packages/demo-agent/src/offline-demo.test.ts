@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { EventEmitter } from "node:events";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { readTraceFile } from "@traceforge/core";
+import { readTraceFile } from "@agent-run-lens/core";
 import { runOfflineDemo } from "./offline-demo.js";
 
 afterEach(() => {
@@ -13,7 +13,7 @@ afterEach(() => {
 
 describe("offline demonstration agent", () => {
   it("creates a complete trace with failure, patch, and final success", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-offline-demo-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-offline-demo-"));
     const tracePath = join(directory, "latest.trace.jsonl");
 
     await runOfflineDemo({ workspacePath: join(directory, "fixture"), tracePath });
@@ -28,7 +28,7 @@ describe("offline demonstration agent", () => {
   });
 
   it("records command launch failures as evidence", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-offline-demo-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-offline-demo-"));
     const tracePath = join(directory, "latest.trace.jsonl");
 
     vi.doMock("node:child_process", () => ({

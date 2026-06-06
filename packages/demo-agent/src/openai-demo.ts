@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { createRecorder } from "@traceforge/core";
+import { createRecorder } from "@agent-run-lens/core";
 import { createNormalizeEmailFixture, patchNormalizeEmail } from "./fixture.js";
 import type { RunOfflineDemoOptions } from "./offline-demo.js";
 

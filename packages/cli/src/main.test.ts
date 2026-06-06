@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runDemoCommand } from "./commands/demo.js";
-import { parseArguments } from "./main.js";
+import { helpText, parseArguments } from "./main.js";
 
 const originalOpenAiApiKey = process.env.OPENAI_API_KEY;
 
@@ -36,7 +36,7 @@ describe("command-line argument parsing", () => {
   });
 
   it("keeps the latest trace when the OpenAI demonstration is missing an API key", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-demo-test-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-demo-test-"));
     const latestTrace = join(directory, "examples", "traces", "latest.trace.jsonl");
     const traceContent = "{\"id\":\"event_1\"}\n";
 
@@ -53,5 +53,13 @@ describe("command-line argument parsing", () => {
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
+  });
+});
+
+describe("command-line help", () => {
+  it("uses the AgentRunLens product and command names", () => {
+    expect(helpText()).toContain("AgentRunLens command-line tools");
+    expect(helpText()).toContain("agent-run-lens demo --offline");
+    expect(helpText()).not.toContain("TraceForge");
   });
 });

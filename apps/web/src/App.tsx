@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { TraceEvent } from "@traceforge/core";
+import type { TraceEvent } from "@agent-run-lens/core";
 import { DiffPanel } from "./components/DiffPanel.js";
 import { EventDetails } from "./components/EventDetails.js";
 import { EventTimeline } from "./components/EventTimeline.js";
@@ -127,7 +127,7 @@ export function App() {
     <main className="viewer-shell">
       <aside className="trace-sidebar" aria-label="Trace source and summary">
         <div className="app-title">
-          <h1>TraceForge</h1>
+          <h1>AgentRunLens</h1>
           <span>Local Trace Viewer</span>
         </div>
 

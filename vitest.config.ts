@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
-      "@traceforge/core": fileURLToPath(new URL("./packages/core/src/index.ts", import.meta.url))
+      "@agent-run-lens/core": fileURLToPath(new URL("./packages/core/src/index.ts", import.meta.url))
     }
   },
   test: {

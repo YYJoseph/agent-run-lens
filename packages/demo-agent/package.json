@@ -1,5 +1,5 @@
 {
-  "name": "@traceforge/demo-agent",
+  "name": "@agent-run-lens/demo-agent",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
     "check": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@traceforge/core": "workspace:*"
+    "@agent-run-lens/core": "workspace:*"
   },
   "devDependencies": {}
 }

@@ -31,13 +31,13 @@ export function parseArguments(args: string[]): ParsedArguments {
 
 export function helpText(): string {
   return [
-    "TraceForge command-line tools",
+    "AgentRunLens command-line tools",
     "",
     "Usage:",
-    "  traceforge demo --offline",
-    "  traceforge demo --openai",
-    "  traceforge export <trace-file>",
-    "  traceforge view <trace-file>"
+    "  agent-run-lens demo --offline",
+    "  agent-run-lens demo --openai",
+    "  agent-run-lens export <trace-file>",
+    "  agent-run-lens view <trace-file>"
   ].join("\n");
 }
 

@@ -10,7 +10,7 @@ type DemoAgentModule = {
   runOpenAiDemo(options: RunDemoOptions): Promise<string>;
 };
 
-const demoAgentPackage = "@traceforge/demo-agent";
+const demoAgentPackage = "@agent-run-lens/demo-agent";
 
 async function loadDemoAgent(): Promise<DemoAgentModule> {
   return (await import(demoAgentPackage)) as DemoAgentModule;
@@ -28,7 +28,7 @@ export async function runDemoCommand(mode: "offline" | "openai", rootPath = proc
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    console.log("OPENAI_API_KEY is not set. Run `traceforge demo --offline` for the local demonstration.");
+    console.log("OPENAI_API_KEY is not set. Run `agent-run-lens demo --offline` for the local demonstration.");
     return;
   }
 

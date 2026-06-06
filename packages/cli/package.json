@@ -1,17 +1,19 @@
 {
-  "name": "@traceforge/cli",
+  "name": "@agent-run-lens/cli",
   "version": "0.1.0",
   "type": "module",
   "bin": {
+    "agent-run-lens": "dist/main.js",
     "traceforge": "dist/main.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
-    "traceforge": "node -e \"const args = process.argv.slice(1); if (args[0] === '--') args.shift(); if (process.env.INIT_CWD) process.chdir(process.env.INIT_CWD); import('./dist/main.js').then((m) => m.main(args)).catch((error) => { console.error(error instanceof Error ? error.message : String(error)); process.exitCode = 1; })\""
+    "agent-run-lens": "node -e \"const args = process.argv.slice(1); if (args[0] === '--') args.shift(); if (process.env.INIT_CWD) process.chdir(process.env.INIT_CWD); import('./dist/main.js').then((m) => m.main(args)).catch((error) => { console.error(error instanceof Error ? error.message : String(error)); process.exitCode = 1; })\"",
+    "traceforge": "corepack pnpm run agent-run-lens"
   },
   "dependencies": {
-    "@traceforge/core": "workspace:*",
-    "@traceforge/demo-agent": "workspace:*"
+    "@agent-run-lens/core": "workspace:*",
+    "@agent-run-lens/demo-agent": "workspace:*"
   }
 }

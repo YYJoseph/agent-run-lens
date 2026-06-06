@@ -6,7 +6,7 @@ import { exportTraceFolder } from "./export-trace.js";
 
 describe("trace export folders", () => {
   it("sanitizes run identifiers before creating export folders", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-export-test-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-export-test-"));
     const traceFile = join(directory, "malicious.trace.jsonl");
     const event = {
       id: "event_1",
@@ -23,7 +23,7 @@ describe("trace export folders", () => {
       exportPath = await exportTraceFolder(traceFile);
 
       expect(dirname(exportPath)).toBe(resolve("."));
-      expect(basename(exportPath)).toBe("traceforge-export-.._bad_run");
+      expect(basename(exportPath)).toBe("agent-run-lens-export-.._bad_run");
     } finally {
       if (exportPath) {
         await rm(exportPath, { recursive: true, force: true });
@@ -33,7 +33,7 @@ describe("trace export folders", () => {
   });
 
   it("includes file diffs and safe environment metadata in the export folder", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "traceforge-export-test-"));
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-export-test-"));
     const traceFile = join(directory, "bundle.trace.jsonl");
     const events = [
       {
@@ -72,7 +72,7 @@ describe("trace export folders", () => {
       expect(environment.platform).toBe(process.platform);
       expect(environment.architecture).toBe(process.arch);
       expect(typeof environment.exportedAt).toBe("string");
-      expect(environment).toHaveProperty("traceForgeVersion");
+      expect(environment).toHaveProperty("agentRunLensVersion");
     } finally {
       if (exportPath) {
         await rm(exportPath, { recursive: true, force: true });

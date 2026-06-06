@@ -1,4 +1,4 @@
-import type { TraceEvent } from "@traceforge/core";
+import type { TraceEvent } from "@agent-run-lens/core";
 
 type EventTimelineProps = {
   events: TraceEvent[];

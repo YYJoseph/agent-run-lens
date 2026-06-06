@@ -6,7 +6,7 @@ import "./styles.css";
 const root = document.getElementById("root");
 
 if (!root) {
-  throw new Error("TraceForge viewer root element was not found.");
+  throw new Error("AgentRunLens viewer root element was not found.");
 }
 
 createRoot(root).render(

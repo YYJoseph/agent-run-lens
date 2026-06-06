@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@traceforge/core": fileURLToPath(new URL("../../packages/core/src/index.ts", import.meta.url))
+      "@agent-run-lens/core": fileURLToPath(new URL("../../packages/core/src/index.ts", import.meta.url))
     }
   },
   server: {
