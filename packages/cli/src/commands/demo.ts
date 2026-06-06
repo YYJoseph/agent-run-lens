@@ -1,4 +1,3 @@
-import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 type RunDemoOptions = {
@@ -17,14 +16,12 @@ async function loadDemoAgent(): Promise<DemoAgentModule> {
   return (await import(demoAgentPackage)) as DemoAgentModule;
 }
 
-export async function runDemoCommand(mode: "offline" | "openai"): Promise<void> {
-  const tracePath = resolve("examples", "traces", "latest.trace.jsonl");
-  const workspacePath = resolve("examples", "fixtures", "offline-normalize-email");
-
-  await rm(tracePath, { force: true });
-  const demoAgent = await loadDemoAgent();
+export async function runDemoCommand(mode: "offline" | "openai", rootPath = process.cwd()): Promise<void> {
+  const tracePath = resolve(rootPath, "examples", "traces", "latest.trace.jsonl");
+  const workspacePath = resolve(rootPath, "examples", "fixtures", "offline-normalize-email");
 
   if (mode === "offline") {
+    const demoAgent = await loadDemoAgent();
     const outputPath = await demoAgent.runOfflineDemo({ workspacePath, tracePath });
     console.log(`Trace written to ${outputPath}`);
     return;
@@ -35,6 +32,7 @@ export async function runDemoCommand(mode: "offline" | "openai"): Promise<void> 
     return;
   }
 
+  const demoAgent = await loadDemoAgent();
   const outputPath = await demoAgent.runOpenAiDemo({ workspacePath, tracePath });
   console.log(`Trace written to ${outputPath}`);
 }

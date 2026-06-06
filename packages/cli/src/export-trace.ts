@@ -1,6 +1,6 @@
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
-import { readTraceFile, summarizeTrace, type TraceSummary } from "@traceforge/core";
+import { readTraceFile, summarizeTrace, type TraceEvent, type TraceSummary } from "@traceforge/core";
 
 function formatNullable(value: string | number | null): string {
   return value === null ? "None" : String(value);
@@ -29,6 +29,48 @@ function sanitizeRunId(runId: string | null): string {
   return sanitized === "" ? "unknown-run" : sanitized;
 }
 
+function readRecordString(value: unknown, key: string): string | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  return typeof record[key] === "string" ? record[key] : null;
+}
+
+function formatFileDiffs(events: TraceEvent[]): string {
+  const filePatchEvents = events.filter((event) => event.type === "file_patch");
+  const lines = ["# TraceForge File Diffs", ""];
+
+  if (filePatchEvents.length === 0) {
+    lines.push("No file patch events were captured.", "");
+    return lines.join("\n");
+  }
+
+  filePatchEvents.forEach((event, index) => {
+    const path = readRecordString(event.input, "path") ?? "Unknown file";
+    const patch = readRecordString(event.output, "patch") ?? "No patch content captured.";
+
+    lines.push(`## ${index + 1}. ${path}`, "");
+    if (event.summary) {
+      lines.push(event.summary, "");
+    }
+    lines.push("```diff", patch, "```", "");
+  });
+
+  return lines.join("\n");
+}
+
+function createEnvironmentMetadata() {
+  return {
+    nodeVersion: process.version,
+    platform: process.platform,
+    architecture: process.arch,
+    traceForgeVersion: process.env.npm_package_version ?? null,
+    exportedAt: new Date().toISOString()
+  };
+}
+
 export async function exportTraceFolder(traceFile: string): Promise<string> {
   const tracePath = resolve(traceFile);
   const events = await readTraceFile(tracePath);
@@ -40,6 +82,8 @@ export async function exportTraceFolder(traceFile: string): Promise<string> {
   await mkdir(exportPath, { recursive: true });
   await copyFile(tracePath, join(exportPath, traceFileName));
   await writeFile(join(exportPath, "summary.md"), formatSummary(summary, traceFileName), "utf8");
+  await writeFile(join(exportPath, "diffs.md"), formatFileDiffs(events), "utf8");
+  await writeFile(join(exportPath, "environment.json"), `${JSON.stringify(createEnvironmentMetadata(), null, 2)}\n`, "utf8");
 
   return exportPath;
 }
