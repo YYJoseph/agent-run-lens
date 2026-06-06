@@ -6,18 +6,105 @@ function formatNullable(value: string | number | null): string {
   return value === null ? "None" : String(value);
 }
 
-function formatSummary(summary: TraceSummary, traceFileName: string): string {
+function formatDuration(durationMs: number | undefined): string {
+  return durationMs === undefined ? "Not captured" : `${durationMs} ms`;
+}
+
+function formatObjectPreview(value: unknown): string {
+  if (value === undefined || value === null) {
+    return "Not captured";
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return JSON.stringify(value, null, 2);
+}
+
+function getEventLabel(event: TraceEvent): string {
+  return event.summary ?? `${event.type} (${event.id})`;
+}
+
+function formatEventList(events: TraceEvent[], emptyMessage: string): string[] {
+  if (events.length === 0) {
+    return [`- ${emptyMessage}`];
+  }
+
+  return events.map((event) => {
+    const status = event.status ? `, status: ${event.status}` : "";
+    return `- ${event.timestamp} - ${event.type}${status} - ${getEventLabel(event)}`;
+  });
+}
+
+function formatTimeline(events: TraceEvent[]): string[] {
+  return formatEventList(events.slice(0, 12), "No events were captured.");
+}
+
+function formatChangedFiles(events: TraceEvent[]): string[] {
+  const filePatchEvents = events.filter((event) => event.type === "file_patch");
+
+  if (filePatchEvents.length === 0) {
+    return ["- No file patch events were captured."];
+  }
+
+  return filePatchEvents.map((event) => {
+    const path = readRecordString(event.input, "path") ?? "Unknown file";
+    return `- ${path}: ${event.summary ?? "No summary captured."}`;
+  });
+}
+
+function formatSummary(summary: TraceSummary, traceFileName: string, events: TraceEvent[]): string {
+  const promptEvent = events.find((event) => event.type === "user_prompt");
+  const toolEvents = events.filter((event) => event.type === "tool_call_started" || event.type === "shell_command");
+  const failureEvents = events.filter((event) => event.status === "error" || event.type === "error");
+  const retryEvents = events.filter((event) => event.type === "retry");
+  const completionEvent = [...events].reverse().find((event) => event.type === "run_completed");
+
   return [
-    "# AgentRunLens Export Summary",
+    "# AgentRunLens Run Review",
     "",
-    `Trace file: ${traceFileName}`,
-    `Run identifier: ${formatNullable(summary.runId)}`,
-    `Final status: ${formatNullable(summary.finalStatus)}`,
-    `Event count: ${summary.eventCount}`,
-    `Failure count: ${summary.failureCount}`,
-    `Retry count: ${summary.retryCount}`,
-    `File patch count: ${summary.filePatchCount}`,
-    `First failure event identifier: ${formatNullable(summary.firstFailureEventId)}`,
+    "## Overview",
+    "",
+    `- Trace file: ${traceFileName}`,
+    `- Run identifier: ${formatNullable(summary.runId)}`,
+    `- Final status: ${formatNullable(summary.finalStatus)}`,
+    `- Event count: ${summary.eventCount}`,
+    `- Failure count: ${summary.failureCount}`,
+    `- Retry count: ${summary.retryCount}`,
+    `- File patch count: ${summary.filePatchCount}`,
+    `- First failure event identifier: ${formatNullable(summary.firstFailureEventId)}`,
+    `- Completed duration: ${formatDuration(completionEvent?.durationMs)}`,
+    "",
+    "## Original Request",
+    "",
+    "```text",
+    formatObjectPreview(promptEvent?.input ?? promptEvent?.summary),
+    "```",
+    "",
+    "## Key Timeline",
+    "",
+    ...formatTimeline(events),
+    "",
+    "## Tool And Command Activity",
+    "",
+    ...formatEventList(toolEvents, "No tool or shell command activity was captured."),
+    "",
+    "## Changed Files",
+    "",
+    ...formatChangedFiles(events),
+    "",
+    "## Failures And Retries",
+    "",
+    ...formatEventList(failureEvents, "No failure events were captured."),
+    "",
+    ...formatEventList(retryEvents, "No retry events were captured."),
+    "",
+    "## Final Result",
+    "",
+    "```text",
+    formatObjectPreview(completionEvent?.output ?? completionEvent?.summary),
+    "```",
     ""
   ].join("\n");
 }
@@ -81,7 +168,7 @@ export async function exportTraceFolder(traceFile: string): Promise<string> {
 
   await mkdir(exportPath, { recursive: true });
   await copyFile(tracePath, join(exportPath, traceFileName));
-  await writeFile(join(exportPath, "summary.md"), formatSummary(summary, traceFileName), "utf8");
+  await writeFile(join(exportPath, "summary.md"), formatSummary(summary, traceFileName, events), "utf8");
   await writeFile(join(exportPath, "diffs.md"), formatFileDiffs(events), "utf8");
   await writeFile(join(exportPath, "environment.json"), `${JSON.stringify(createEnvironmentMetadata(), null, 2)}\n`, "utf8");
 

@@ -80,4 +80,75 @@ describe("trace export folders", () => {
       await rm(directory, { recursive: true, force: true });
     }
   });
+
+  it("writes a readable run review summary", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "agent-run-lens-export-test-"));
+    const traceFile = join(directory, "review.trace.jsonl");
+    const events = [
+      {
+        id: "event_1",
+        runId: "review-run",
+        timestamp: "2026-06-05T00:00:00.000Z",
+        type: "run_started",
+        summary: "Start recording the agent run"
+      },
+      {
+        id: "event_2",
+        runId: "review-run",
+        timestamp: "2026-06-05T00:00:01.000Z",
+        type: "user_prompt",
+        input: "Build a local-first trace viewer"
+      },
+      {
+        id: "event_3",
+        runId: "review-run",
+        timestamp: "2026-06-05T00:00:02.000Z",
+        type: "shell_command",
+        status: "success",
+        summary: "Run the test suite"
+      },
+      {
+        id: "event_4",
+        runId: "review-run",
+        timestamp: "2026-06-05T00:00:03.000Z",
+        type: "file_patch",
+        summary: "Add export report",
+        input: { path: "packages/cli/src/export-trace.ts" },
+        output: { patch: "+formatSummary(events);" }
+      },
+      {
+        id: "event_5",
+        runId: "review-run",
+        timestamp: "2026-06-05T00:00:04.000Z",
+        type: "run_completed",
+        status: "success",
+        durationMs: 4000,
+        output: "Viewer and export report completed"
+      }
+    ];
+
+    await writeFile(traceFile, `${events.map((event) => JSON.stringify(event)).join("\n")}\n`, "utf8");
+
+    let exportPath: string | null = null;
+
+    try {
+      exportPath = await exportTraceFolder(traceFile);
+
+      const summary = await readFile(join(exportPath, "summary.md"), "utf8");
+
+      expect(summary).toContain("# AgentRunLens Run Review");
+      expect(summary).toContain("## Original Request");
+      expect(summary).toContain("Build a local-first trace viewer");
+      expect(summary).toContain("## Tool And Command Activity");
+      expect(summary).toContain("Run the test suite");
+      expect(summary).toContain("packages/cli/src/export-trace.ts");
+      expect(summary).toContain("Viewer and export report completed");
+      expect(summary).toContain("Completed duration: 4000 ms");
+    } finally {
+      if (exportPath) {
+        await rm(exportPath, { recursive: true, force: true });
+      }
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
 });

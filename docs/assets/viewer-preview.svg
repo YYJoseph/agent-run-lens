@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title description">
+  <title id="title">AgentRunLens viewer preview</title>
+  <desc id="description">A preview of the AgentRunLens trace viewer with overview metrics, an event timeline, and event details.</desc>
+  <rect width="1280" height="760" fill="#f8fafc"/>
+  <rect x="56" y="42" width="1168" height="676" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
+  <text x="96" y="96" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">AgentRunLens</text>
+  <text x="96" y="126" fill="#64748b" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16">Local-first black box recorder for artificial intelligence agent runs</text>
+  <rect x="96" y="160" width="234" height="92" rx="10" fill="#eef6ff" stroke="#bfdbfe"/>
+  <text x="118" y="194" fill="#1d4ed8" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">FINAL STATUS</text>
+  <text x="118" y="228" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">success</text>
+  <rect x="356" y="160" width="234" height="92" rx="10" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="378" y="194" fill="#15803d" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">EVENTS</text>
+  <text x="378" y="228" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">14 recorded</text>
+  <rect x="616" y="160" width="234" height="92" rx="10" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="638" y="194" fill="#c2410c" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">FILE PATCHES</text>
+  <text x="638" y="228" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">3 files</text>
+  <rect x="876" y="160" width="268" height="92" rx="10" fill="#fdf2f8" stroke="#fbcfe8"/>
+  <text x="898" y="194" fill="#be185d" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">REVIEW MODE</text>
+  <text x="898" y="228" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">ready</text>
+  <text x="96" y="305" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Event timeline</text>
+  <rect x="96" y="326" width="514" height="320" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+  <circle cx="132" cy="374" r="8" fill="#2563eb"/>
+  <text x="158" y="380" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">run_started</text>
+  <text x="158" y="404" fill="#64748b" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">The agent run begins and metadata is captured.</text>
+  <line x1="132" y1="392" x2="132" y2="456" stroke="#cbd5e1" stroke-width="3"/>
+  <circle cx="132" cy="472" r="8" fill="#16a34a"/>
+  <text x="158" y="478" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">tool_call_completed</text>
+  <text x="158" y="502" fill="#64748b" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">Shell commands, tool output, and timings are visible.</text>
+  <line x1="132" y1="490" x2="132" y2="554" stroke="#cbd5e1" stroke-width="3"/>
+  <circle cx="132" cy="570" r="8" fill="#ea580c"/>
+  <text x="158" y="576" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">file_patch</text>
+  <text x="158" y="600" fill="#64748b" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">Changed files and captured diffs can be reviewed later.</text>
+  <text x="656" y="305" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Selected event details</text>
+  <rect x="656" y="326" width="488" height="320" rx="12" fill="#0f172a"/>
+  <text x="684" y="370" fill="#93c5fd" font-family="Cascadia Code, Consolas, monospace" font-size="16">type:</text>
+  <text x="746" y="370" fill="#e2e8f0" font-family="Cascadia Code, Consolas, monospace" font-size="16">"file_patch"</text>
+  <text x="684" y="406" fill="#93c5fd" font-family="Cascadia Code, Consolas, monospace" font-size="16">summary:</text>
+  <text x="778" y="406" fill="#e2e8f0" font-family="Cascadia Code, Consolas, monospace" font-size="16">"Add export report"</text>
+  <text x="684" y="442" fill="#93c5fd" font-family="Cascadia Code, Consolas, monospace" font-size="16">path:</text>
+  <text x="746" y="442" fill="#e2e8f0" font-family="Cascadia Code, Consolas, monospace" font-size="16">"packages/cli/src/export-trace.ts"</text>
+  <text x="684" y="494" fill="#86efac" font-family="Cascadia Code, Consolas, monospace" font-size="16">+ generate readable run review</text>
+  <text x="684" y="530" fill="#fca5a5" font-family="Cascadia Code, Consolas, monospace" font-size="16">- plain counter-only summary</text>
+  <rect x="684" y="574" width="252" height="36" rx="8" fill="#1e293b"/>
+  <text x="704" y="598" fill="#bfdbfe" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">Export bundle ready</text>
+</svg>
