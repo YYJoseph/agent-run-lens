@@ -20,8 +20,22 @@ corepack pnpm run traceforge -- view examples/traces/latest.trace.jsonl
 
 ## Optional OpenAI Demonstration
 
+POSIX shells:
+
 ```bash
 OPENAI_API_KEY=your_key corepack pnpm run traceforge -- demo --openai
+```
+
+PowerShell:
+
+```powershell
+$env:OPENAI_API_KEY="your_key"; corepack pnpm run traceforge -- demo --openai
+```
+
+Command Prompt:
+
+```cmd
+set OPENAI_API_KEY=your_key && corepack pnpm run traceforge -- demo --openai
 ```
 
 If `OPENAI_API_KEY` is not set, use the offline demonstration.
