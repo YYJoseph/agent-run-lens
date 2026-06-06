@@ -35,7 +35,7 @@ $env:OPENAI_API_KEY="your_key"; corepack pnpm run traceforge -- demo --openai
 Command Prompt:
 
 ```cmd
-set OPENAI_API_KEY=your_key && corepack pnpm run traceforge -- demo --openai
+set "OPENAI_API_KEY=your_key" && corepack pnpm run traceforge -- demo --openai
 ```
 
 If `OPENAI_API_KEY` is not set, use the offline demonstration.
