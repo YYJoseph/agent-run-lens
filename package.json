@@ -10,7 +10,7 @@
     "test": "vitest run",
     "check": "corepack pnpm -r --if-present check",
     "verify": "corepack pnpm build && corepack pnpm test",
-    "traceforge": "node -e \"const args = process.argv.slice(1); if (args[0] === '--') args.shift(); import('./packages/cli/dist/main.js').then((m) => m.main(args)).catch((error) => { console.error(error instanceof Error ? error.message : String(error)); process.exitCode = 1; })\""
+    "traceforge": "corepack pnpm --filter @traceforge/cli traceforge"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
