@@ -103,13 +103,51 @@ record of how an important project was built.
 
 如果你是第一次使用，可以按下面的顺序理解：
 
-1. `corepack pnpm install` 安装项目依赖。
-2. `corepack pnpm build` 构建所有工作区包。
-3. `corepack pnpm run agent-run-lens -- demo --offline` 生成一份不依赖网络模型的本地演示轨迹。
-4. `corepack pnpm run agent-run-lens -- view examples/traces/latest.trace.jsonl` 打开本地可视化查看器。
-5. `corepack pnpm run agent-run-lens -- export examples/traces/latest.trace.jsonl` 导出一份可以分享、归档和复盘的运行包。
+第一步，安装项目依赖：
+
+```bash
+corepack pnpm install
+```
+
+第二步，构建所有工作区包：
+
+```bash
+corepack pnpm build
+```
+
+第三步，生成一份不依赖网络模型的本地演示轨迹：
+
+```bash
+corepack pnpm run agent-run-lens -- demo --offline
+```
+
+第四步，打开本地可视化查看器：
+
+```bash
+corepack pnpm run agent-run-lens -- view examples/traces/latest.trace.jsonl
+```
+
+第五步，导出一份可以分享、归档和复盘的运行包：
+
+```bash
+corepack pnpm run agent-run-lens -- export examples/traces/latest.trace.jsonl
+```
 
 对于重要项目，建议在关键构建阶段主动运行 AgentRunLens。这样你不仅能保存最终结果，也能保存人工智能代理完成项目时的过程证据，包括它做了什么、为什么失败、如何重试、修改了哪些文件，以及最终交付是否符合目标。
+
+### Copy-Ready Commands
+
+If you already have Node.js, Corepack, and Git installed, you can copy this
+whole command group:
+
+```bash
+git clone https://github.com/YYJoseph/agent-run-lens.git
+cd agent-run-lens
+corepack pnpm install
+corepack pnpm build
+corepack pnpm run agent-run-lens -- demo --offline
+corepack pnpm run agent-run-lens -- view examples/traces/latest.trace.jsonl
+```
 
 ## Optional OpenAI Demonstration
 
